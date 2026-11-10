@@ -6,7 +6,7 @@
 /*   By: mamehri <mamehri@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/06 06:08:54 by mamehri           #+#    #+#             */
-/*   Updated: 2026/11/09 11:57:18 by mamehri          ###   ########.fr       */
+/*   Updated: 2026/11/10 13:57:21 by mamehri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,7 @@ static int	ft_loop(int fd, char **stash, char *buf)
 		else if (bytes == 0)
 			break ;
 		buf[bytes] = '\0';
-		tmp = ft_strdup(*stash);
-		free(*stash);
+		tmp = *stash;
 		*stash = ft_strjoin(tmp, buf);
 		free(tmp);
 	}
@@ -114,6 +113,6 @@ char	*get_next_line(int fd)
 		return (ft_free(&stash));
 	if (!ft_loop(fd, &stash, buf))
 		return (ft_free(&buf));
-	free(buf);
+	ft_free(&buf);
 	return (ft_ret_extract(&stash));
 }

@@ -6,23 +6,11 @@
 /*   By: mamehri <mamehri@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/09 14:49:36 by mamehri           #+#    #+#             */
-/*   Updated: 2026/11/09 18:43:16 by mamehri          ###   ########.fr       */
+/*   Updated: 2026/11/10 18:47:28 by mamehri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-
-int	ft_new_line(char c)
-{
-	return (c == '\n');
-}
-
-char	*ft_free(char **s)
-{
-	free(*s);
-	*s = NULL;
-	return (NULL);
-}
 
 size_t	ft_strlen(const char *s)
 {
@@ -34,6 +22,19 @@ size_t	ft_strlen(const char *s)
 	while (s[i])
 		i++;
 	return (i);
+}
+
+int	ft_check_new_line(char *s)
+{
+	int	i;
+
+	i = 0;
+	if (!s)
+		return (0);
+	while (s[i])
+		if (s[i++] == '\n')
+			return (1);
+	return (0);
 }
 
 static char	*ft_strdup(char *s)
@@ -80,4 +81,33 @@ char	*ft_strjoin(char *s1, char *s2)
 		join[j++] = s2[i++];
 	join[j] = '\0';
 	return (join);
+}
+
+void	*ft_lstfree(t_list **lst, int fd)
+{
+	t_list	*current;
+	t_list	*prev;
+
+	current = *lst;
+	if (!current)
+		return (NULL);
+	if (current->fd == fd)
+	{
+		prev = current->next;
+		free(current -> content);
+		free(current);
+		*lst = prev;
+		return (NULL);
+	}
+	while (current->fd != fd && current->next != NULL)
+	{
+		prev = current;
+		current = current -> next;
+	}
+	if (current->fd != fd && current->next == NULL)
+		return (NULL);
+	prev -> next = current -> next;
+	free(current -> content);
+	free(current);
+	return (NULL);
 }
