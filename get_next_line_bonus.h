@@ -6,7 +6,7 @@
 /*   By: mamehri <mamehri@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/09 14:49:33 by mamehri           #+#    #+#             */
-/*   Updated: 2026/11/10 18:47:39 by mamehri          ###   ########.fr       */
+/*   Updated: 2026/11/11 10:32:52 by mamehri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 typedef struct s_list
 {
 	int				fd;
-	char			*content;
+	char			*stash;
 	struct s_list	*next;
 }	t_list;
 

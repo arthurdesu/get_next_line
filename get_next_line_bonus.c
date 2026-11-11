@@ -6,7 +6,7 @@
 /*   By: mamehri <mamehri@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/09 14:49:27 by mamehri           #+#    #+#             */
-/*   Updated: 2026/11/10 18:47:20 by mamehri          ###   ########.fr       */
+/*   Updated: 2026/11/11 11:21:03 by mamehri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static t_list	*ft_find(t_list **lst, int fd)
 {
-	t_list	*new;
+	t_list	*node;
 	t_list	*current;
 
 	current = *lst;
@@ -22,20 +22,20 @@ static t_list	*ft_find(t_list **lst, int fd)
 		current = current->next;
 	if (current && current->fd == fd)
 		return (current);
-	new = malloc(sizeof(t_list));
-	if (!new)
+	node = malloc(sizeof(t_list));
+	if (!node)
 		return (NULL);
-	new -> fd = fd;
-	new -> content = NULL;
-	new -> next = NULL;
+	node -> fd = fd;
+	node -> stash = NULL;
+	node -> next = NULL;
 	if (!*lst)
-		*lst = new;
+		*lst = node;
 	else
-		current->next = new;
-	return (new);
+		current->next = node;
+	return (node);
 }
 
-static void	ft_extract(char **stash)
+static char	*ft_extract(char **stash)
 {
 	char	*tmp;
 	size_t	len;
@@ -49,11 +49,7 @@ static void	ft_extract(char **stash)
 		len++;
 	tmp = malloc(ft_strlen(*stash) - len + 1);
 	if (!tmp)
-	{
-		free(*stash);
-		*stash = NULL;
-		return ;
-	}
+		return (NULL);
 	while (*((*stash) + i + len))
 	{
 		tmp[i] = *((*stash) + i + len);
@@ -62,75 +58,81 @@ static void	ft_extract(char **stash)
 	tmp[i] = '\0';
 	free(*stash);
 	*stash = tmp;
+	return (*stash);
 }
 
-static char	*ft_ret_extract(t_list **l, int f)
+static char	*ft_ret_extract(t_list **lst, int fd)
 {
+	t_list	*node;
 	char	*ret;
 	size_t	len;
 	size_t	index;
 
-	if (!ft_find(l, f))
-		return (ft_lstfree(l, f));
-	if (!ft_find(l, f)->content || !*ft_find(l, f)->content)
-		return (ft_lstfree(l, f));
 	len = 0;
 	index = 0;
-	while (ft_find(l, f)->content[len] != '\n' && ft_find(l, f)->content[len])
+	node = ft_find(lst, fd);
+	while (node->stash[len] != '\n'
+		&& node->stash[len])
 		len++;
-	if (ft_find(l, f)->content[len] == '\n')
+	if (node->stash[len] == '\n')
 		len++;
 	ret = malloc(len + 1);
 	if (!ret)
-		return (ft_lstfree(l, f));
+		return (ft_lstfree(lst, fd));
 	while (index < len)
 	{
-		ret[index] = ft_find(l, f)->content[index];
+		ret[index] = node->stash[index];
 		index++;
 	}
 	ret[index] = '\0';
-	ft_extract(&(ft_find(l, f)->content));
+	if (!ft_extract(&(node->stash)))
+		return (ft_lstfree(lst, fd));
 	return (ret);
 }
 
 static int	ft_loop(int fd, t_list **lst, char *buf)
 {
 	char	*tmp;
-	t_list	*stash;
+	t_list	*node;
 	ssize_t	bytes;
 
-	stash = ft_find(lst, fd);
-	while (!ft_check_new_line(stash->content))
+	node = ft_find(lst, fd);
+	if (!node)
+		return (0);
+	while (!ft_check_new_line(node->stash))
 	{
 		bytes = read(fd, buf, BUFFER_SIZE);
 		if (bytes < 0)
 			return (0);
 		else if (bytes == 0)
-			break ;
+			return (1);
 		buf[bytes] = '\0';
-		tmp = stash->content;
-		stash->content = ft_strjoin(tmp, buf);
+		tmp = node->stash;
+		node->stash = ft_strjoin(tmp, buf);
 		free(tmp);
-		tmp = NULL;
+		if (!node->stash)
+			return (0);
 	}
 	return (1);
 }
 
 char	*get_next_line(int fd)
 {
-	static t_list	*lst;
+	static t_list	*lst = NULL;
+	t_list			*node;
 	char			*buf;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buf = malloc(BUFFER_SIZE + 1);
+	buf = malloc((size_t)BUFFER_SIZE + 1);
 	if (!buf || !ft_loop(fd, &lst, buf))
 	{
 		free(buf);
-		buf = NULL;
 		return (ft_lstfree(&lst, fd));
 	}
 	free(buf);
-	buf = NULL;
+	node = ft_find(&lst, fd);
+	if (!node->stash || !*node->stash)
+		return (ft_lstfree(&lst, fd));
 	return (ft_ret_extract(&lst, fd));
 }

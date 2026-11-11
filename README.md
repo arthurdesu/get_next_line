@@ -113,6 +113,18 @@ File content `ab\ncd\nef` (no trailing newline) with `BUFFER_SIZE=4`:
 | 3 | `ef` | `0` (end of file) | `ef` | `ef` | *(freed, `NULL`)* |
 | 4 | *(`NULL`)* | `0` (end of file) | *(`NULL`)* | `NULL` | *(`NULL`)* |
 
+## Bonus
+ 
+The bonus part makes `get_next_line()` read several file descriptors alternately (for example `fd` 3, then 4, then 3 again) without losing the reading position of each one and without mixing their lines.
+ 
+The algorithm stays the same. Only the stash changes: the `static` pointer to the stash becomes a single `static` pointer to a linked list with one node per file descriptor, each node holding its `fd` and its own stash, so the five steps above are applied only to the stash of the requested descriptor.
+ 
+The bonus files are `get_next_line_bonus.h`, `get_next_line_bonus.c` and `get_next_line_utils_bonus.c`. They are compiled like the mandatory ones, with a test program that alternates between several descriptors:
+ 
+```bash
+cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line_bonus.c get_next_line_utils_bonus.c main.c -o gnl_bonus
+```
+
 ## Resources
 
 ### References
@@ -132,7 +144,7 @@ File content `ab\ncd\nef` (no trailing newline) with `BUFFER_SIZE=4`:
 | Task | Part of the project | How AI was used |
 |---|---|---|
 | Understanding the concepts | Behaviour of `read()`, file descriptors, `static` storage, buffer versus stash | Asked for explanations and examples, then traced the behaviour of `read()`, the buffer and the static stash by hand on a small multi-line example to check that I had understood. |
-| Testing | Edge cases and test program | Suggestions of edge cases to test (empty file, no trailing newline, `BUFFER_SIZE` of 1 and very large, invalid `fd`). |
+| Testing | Edge cases | Suggestions of edge cases to test (empty file, no trailing newline, `BUFFER_SIZE` of 1 and very large, invalid `fd`). |
 | Documentation | This README | Drafted the structure and the wording with AI, then reviewed and corrected the content against my code. |
 
-The source files (`get_next_line.h`, `get_next_line.c`, `get_next_line_utils.c`) were written by me: AI was used to understand the problem, not to produce the code.
+The source files (`get_next_line.h`, `get_next_line.c`, `get_next_line_utils.c`, `get_next_line_bonus.h`, `get_next_line_bonus.c`, `get_next_line_utils_bonus.c`) were written by me: AI was used to understand the problem, not to produce the code.

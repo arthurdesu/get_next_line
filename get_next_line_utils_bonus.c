@@ -6,7 +6,7 @@
 /*   By: mamehri <mamehri@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/09 14:49:36 by mamehri           #+#    #+#             */
-/*   Updated: 2026/11/10 18:47:28 by mamehri          ###   ########.fr       */
+/*   Updated: 2026/11/11 11:16:29 by mamehri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,28 +86,28 @@ char	*ft_strjoin(char *s1, char *s2)
 void	*ft_lstfree(t_list **lst, int fd)
 {
 	t_list	*current;
-	t_list	*prev;
+	t_list	*tmp;
 
 	current = *lst;
 	if (!current)
 		return (NULL);
 	if (current->fd == fd)
 	{
-		prev = current->next;
-		free(current -> content);
+		tmp = current->next;
+		free(current->stash);
 		free(current);
-		*lst = prev;
+		*lst = tmp;
 		return (NULL);
 	}
 	while (current->fd != fd && current->next != NULL)
 	{
-		prev = current;
-		current = current -> next;
+		tmp = current;
+		current = current->next;
 	}
-	if (current->fd != fd && current->next == NULL)
+	if (current->fd != fd)
 		return (NULL);
-	prev -> next = current -> next;
-	free(current -> content);
+	tmp->next = current->next;
+	free(current->stash);
 	free(current);
 	return (NULL);
 }

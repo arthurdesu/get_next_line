@@ -6,7 +6,7 @@
 /*   By: mamehri <mamehri@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/06 06:08:54 by mamehri           #+#    #+#             */
-/*   Updated: 2026/11/10 13:57:21 by mamehri          ###   ########.fr       */
+/*   Updated: 2026/11/11 10:06:09 by mamehri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,6 @@ static char	*ft_ret_extract(char **stash)
 	size_t	size;
 	size_t	index;
 
-	if (!*stash || !**stash)
-		return (ft_free(stash));
 	size = 0;
 	index = 0;
 	while (!ft_is_newline(stash[0][size]) && stash[0][size])
@@ -74,7 +72,8 @@ static char	*ft_ret_extract(char **stash)
 		index++;
 	}
 	ret[index] = '\0';
-	ft_extract(stash);
+	if (!ft_extract(stash))
+		return (ft_free(&ret));
 	return (ret);
 }
 
@@ -97,22 +96,26 @@ static int	ft_loop(int fd, char **stash, char *buf)
 		tmp = *stash;
 		*stash = ft_strjoin(tmp, buf);
 		free(tmp);
+		if (!*stash)
+			return (0);
 	}
 	return (1);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	*stash = NULL;
 	char		*buf;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (ft_free(&stash));
-	buf = malloc(BUFFER_SIZE + 1);
+	buf = malloc((size_t)BUFFER_SIZE + 1);
 	if (!buf)
 		return (ft_free(&stash));
 	if (!ft_loop(fd, &stash, buf))
 		return (ft_free(&buf));
 	ft_free(&buf);
+	if (!stash || !*stash)
+		return (ft_free(&stash));
 	return (ft_ret_extract(&stash));
 }
