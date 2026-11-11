@@ -6,7 +6,7 @@
 /*   By: mamehri <mamehri@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/09 14:49:27 by mamehri           #+#    #+#             */
-/*   Updated: 2026/11/11 11:21:03 by mamehri          ###   ########.fr       */
+/*   Updated: 2026/11/11 16:35:34 by mamehri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ static int	ft_loop(int fd, t_list **lst, char *buf)
 		return (0);
 	while (!ft_check_new_line(node->stash))
 	{
-		bytes = read(fd, buf, BUFFER_SIZE);
+		bytes = read(fd, buf, (size_t)BUFFER_SIZE);
 		if (bytes < 0)
 			return (0);
 		else if (bytes == 0)
@@ -122,7 +122,7 @@ char	*get_next_line(int fd)
 	t_list			*node;
 	char			*buf;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || (size_t)BUFFER_SIZE == 0)
 		return (NULL);
 	buf = malloc((size_t)BUFFER_SIZE + 1);
 	if (!buf || !ft_loop(fd, &lst, buf))
