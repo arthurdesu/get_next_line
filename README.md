@@ -82,8 +82,6 @@ int	main(int argc, char **argv)
 
 ```bash
 ./gnl file.txt          # read a file
-./gnl < file.txt        # read the standard input (redirection)
-echo "hello" | ./gnl    # read from a pipe
 ```
 
 ## Algorithm
