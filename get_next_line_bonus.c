@@ -6,7 +6,7 @@
 /*   By: mamehri <mamehri@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/09 14:49:27 by mamehri           #+#    #+#             */
-/*   Updated: 2026/11/11 16:35:34 by mamehri          ###   ########.fr       */
+/*   Updated: 2026/11/12 10:22:17 by mamehri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static t_list	*ft_find(t_list **lst, int fd)
 	return (node);
 }
 
-static char	*ft_extract(char **stash)
+static char	*ft_extract(char **stash, char *ret)
 {
 	char	*tmp;
 	size_t	len;
@@ -49,7 +49,10 @@ static char	*ft_extract(char **stash)
 		len++;
 	tmp = malloc(ft_strlen(*stash) - len + 1);
 	if (!tmp)
+	{
+		free(ret);
 		return (NULL);
+	}
 	while (*((*stash) + i + len))
 	{
 		tmp[i] = *((*stash) + i + len);
@@ -85,7 +88,7 @@ static char	*ft_ret_extract(t_list **lst, int fd)
 		index++;
 	}
 	ret[index] = '\0';
-	if (!ft_extract(&(node->stash)))
+	if (!ft_extract(&(node->stash), ret))
 		return (ft_lstfree(lst, fd));
 	return (ret);
 }
